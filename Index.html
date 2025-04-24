@@ -1,41 +1,68 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Connect MetaMask</title>
-  </head>
-  <body>
-    <h2>Connect Wallet & Sign</h2>
-    <button onclick="connectWallet()">Connect Wallet</button>
-    <button onclick="signMessage()">Sign Message</button>
-    <pre id="output"></pre>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connect Wallet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background-color: #ffffff;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 16px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #walletAddress, #signature {
+      word-wrap: break-word;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Connect Your Wallet</h2>
+  <button onclick="connectWallet()">Connect Wallet</button>
+  <div id="walletAddress"></div>
+  <button onclick="signMessage()">Sign Message</button>
+  <div id="signature"></div>
 
-    <script>
-      async function connectWallet() {
-        if (window.ethereum) {
-          try {
-            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-            document.getElementById("output").innerText = "Connected: " + accounts[0];
-          } catch (err) {
-            alert("Connection failed: " + err.message);
-          }
-        } else {
-          alert("MetaMask not detected!");
-        }
-      }
+  <script>
+    let account;
 
-      async function signMessage() {
-        const message = "This is a test message for signature";
-        try {
-          const from = (await ethereum.request({ method: 'eth_accounts' }))[0];
-          const signature = await ethereum.request({
-            method: 'personal_sign',
-            params: [message, from],
-          });
-          document.getElementById("output").innerText = "Message:\n" + message + "\n\nSignature:\n" + signature;
-        } catch (err) {
-          alert("Signing failed: " + err.message);
-        }
+    async function connectWallet() {
+      if (typeof window.ethereum !== 'undefined') {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        account = accounts[0];
+        document.getElementById('walletAddress').innerText = "Connected: " + account;
+      } else {
+        alert("MetaMask not detected");
       }
-    </script>
-  </body>
+    }
+
+    async function signMessage() {
+      const message = "Verify me on Chat3!";
+      try {
+        const from = account;
+        const signature = await ethereum.request({
+          method: "personal_sign",
+          params: [message, from],
+        });
+        document.getElementById('signature').innerText = "Signature: " + signature;
+      } catch (err) {
+        alert("Error signing message: " + err.message);
+      }
+    }
+  </script>
+</body>
 </html>
