@@ -1,1 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Connect MetaMask</title>
+  </head>
+  <body>
+    <h2>Connect Wallet & Sign</h2>
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <button onclick="signMessage()">Sign Message</button>
+    <pre id="output"></pre>
 
+    <script>
+      async function connectWallet() {
+        if (window.ethereum) {
+          try {
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            document.getElementById("output").innerText = "Connected: " + accounts[0];
+          } catch (err) {
+            alert("Connection failed: " + err.message);
+          }
+        } else {
+          alert("MetaMask not detected!");
+        }
+      }
+
+      async function signMessage() {
+        const message = "This is a test message for signature";
+        try {
+          const from = (await ethereum.request({ method: 'eth_accounts' }))[0];
+          const signature = await ethereum.request({
+            method: 'personal_sign',
+            params: [message, from],
+          });
+          document.getElementById("output").innerText = "Message:\n" + message + "\n\nSignature:\n" + signature;
+        } catch (err) {
+          alert("Signing failed: " + err.message);
+        }
+      }
+    </script>
+  </body>
+</html>
